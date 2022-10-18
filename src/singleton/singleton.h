@@ -22,6 +22,12 @@
 #ifndef OPENLIB_SINGLETON_H
 #define OPENLIB_SINGLETON_H
 
+//-Supporting libraries
+#include <stddef.h>
+#include <stdio.h>
+#include <mutex>
+#include <thread>
+
 //-Namespace/s
 namespace openlib
 {
@@ -30,7 +36,10 @@ namespace openlib
 	 * Singleton template class (not thread safe)
 	 * Usage: class Test: public Singleton<Test>
 	 * {
-	 * 	void method()
+	 *  friend  Singleton<Test>;
+	 * 	protected:
+	 * 	    Test(){}
+	 * 	    ~Test(){}
 	 * ...
 	 * }
 	 * call instance --> Test().instance().method()
@@ -42,40 +51,61 @@ namespace openlib
 		public:
 			static T& instance() 
 			{
-				static SingletonCleanupGuard mem_guard;
-				if (NULL == m_instance) {
-					m_instance = new T(); 
+			    static SingletonMemGuard guard;
+			    mutex_.lock();
+				if (NULL == instance_)
+				{
+				    instance_ = new T();
 				}
-				return *m_instance;
+				mutex_.unlock();
+				return *instance_;
 			}
 
+		    static void cleanup()
+		    {
+		        mutex_.lock();
+		        if (NULL != instance_)
+		        {
+		            delete instance_;
+		            instance_ = nullptr;
+		        }
+		        mutex_.unlock();
+		    }
+
+
 		protected:
-			//-Hide constructor & destructor
-			Singleton(): m_instance(NULL) { }
-			virtual ~Singleton() { }
+			Singleton(){
+			}
+
+			~Singleton(){
+			}
 
 		private:
-			//-Fields
-			static T* m_instance;
+			inline static T* instance_ = nullptr;
+			inline static std::mutex  mutex_;
 
 			//-Hide operators
 			Singleton(const Singleton&);
 			Singleton& operator= (const Singleton);
-			
+
 			/**
-			 * Class to cleanup the instance when exiting the program
+			 * Cleanup MemGuard
 			 */
-			class SingletonCleanupGuard 
+			class SingletonMemGuard
 			{
-				public: 
-					SingletonCleanupGuard(){} 
-					~SingletonCleanupGuard() 
-					{
-						delete m_instance;
-						m_instance = NULL;
-					}
-			}; /*class SingletonCleanupGuard */
+			      public:
+			        SingletonMemGuard(){};
+			        ~SingletonMemGuard()
+			        {
+			          mutex_.lock();
+			          delete instance_;
+			          instance_ = nullptr;
+			          mutex_.unlock();
+			        }
+			};
+
 	}; /*class Singleton*/
 }; /*namespace openlib*/
+
 
 #endif /*OPENLIB_SINGLETON_H*/
