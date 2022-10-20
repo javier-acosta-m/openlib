@@ -1,6 +1,6 @@
 # openlib
 Simple library of everyday use for C++</br>
-The code is **not** claimed as authored as it is a collectiion of ancillary libraries used over the years, and collected from sources on the Internet and cutomized as well.
+The code is **not** claimed as authored, as it is a collectiion of ancillary libraries used over the years, and collected from sources on the Internet and cutomized as well.
 
 ## Singleton
 Colected from the web, there a many implementations of this out there, this one is simple and it works (not re-inventing the wheel)
