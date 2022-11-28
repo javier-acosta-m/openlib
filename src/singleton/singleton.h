@@ -32,80 +32,85 @@
 namespace openlib
 {
 
-	/**
-	 * Singleton template class (not thread safe)
-	 * Usage: class Test: public Singleton<Test>
-	 * {
-	 *  friend  Singleton<Test>;
-	 * 	protected:
-	 * 	    Test(){}
-	 * 	    ~Test(){}
-	 * ...
-	 * }
-	 * call instance --> Test().instance().method()
-	 * @tparam T The singleton class to implement
-	 */
-	template < typename T >
-	class Singleton 
-	{
-		public:
-			static T& instance() 
-			{
-			    static SingletonMemGuard guard;
-			    mutex_.lock();
-				if (NULL == instance_)
-				{
-				    instance_ = new T();
-				}
-				mutex_.unlock();
-				return *instance_;
-			}
+    /**
+     * Singleton template class (not thread safe)
+     * Usage: class Test: public Singleton<Test>
+     * {
+     *  friend  Singleton<Test>;
+     * 	protected:
+     * 	    Test(){}
+     * 	    ~Test(){}
+     * ...
+     * }
+     * call instance --> Test().instance().method()
+     * @tparam T The singleton class to implement
+     */
+    template < typename T >
+    class Singleton 
+    {
+        public:
+            static T& instance() 
+            {
+                static SingletonMemGuard guard;
+                mutex_.lock();
+                if (NULL == instance_)
+                {
+                    instance_ = new T();
+                }
+                mutex_.unlock();
+                return *instance_;
+            }
 
-		    static void cleanup()
-		    {
-		        mutex_.lock();
-		        if (NULL != instance_)
-		        {
-		            delete instance_;
-		            instance_ = nullptr;
-		        }
-		        mutex_.unlock();
-		    }
+            static void cleanup()
+            {
+                mutex_.lock();
+                if (NULL != instance_)
+                {
+                    delete instance_;
+                    instance_ = nullptr;
+                }
+                mutex_.unlock();
+            }
 
 
-		protected:
-			Singleton(){
-			}
+        protected:
+            Singleton(){}
+            ~Singleton(){}
 
-			~Singleton(){
-			}
 
-		private:
-			inline static T* instance_ = nullptr;
-			inline static std::mutex  mutex_;
+        private:                        
+            //-Class fields
+            static T* instance_;
+            static std::mutex  mutex_;
 
-			//-Hide operators
-			Singleton(const Singleton&);
-			Singleton& operator= (const Singleton);
+            //-Hide operators
+            Singleton(const Singleton&);
+            Singleton& operator= (const Singleton);
 
-			/**
-			 * Cleanup MemGuard
-			 */
-			class SingletonMemGuard
-			{
-			      public:
-			        SingletonMemGuard(){};
-			        ~SingletonMemGuard()
-			        {
-			          mutex_.lock();
-			          delete instance_;
-			          instance_ = nullptr;
-			          mutex_.unlock();
-			        }
-			};
+            /**
+             * Cleanup MemGuard
+             */
+            class SingletonMemGuard
+            {
+                  public:
+                    SingletonMemGuard(){};
+                    ~SingletonMemGuard()
+                    {
+                      mutex_.lock();
+                      delete instance_;
+                      instance_ = nullptr;
+                      mutex_.unlock();
+                    }
+            };
 
-	}; /*class Singleton*/
+    }; /*class Singleton*/
+
+    //-Class Field Initialization
+    template <typename T> T* Singleton<T>::instance_ = NULL;
+    template <typename T> std::mutex Singleton<T>::mutex_;      
+
 }; /*namespace openlib*/
+
 
 
 #endif /*OPENLIB_SINGLETON_H*/
