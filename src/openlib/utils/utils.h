@@ -26,26 +26,29 @@
 #include <stdint.h>
 #include <sstream>
 
+//-Namespace/s
 namespace openlib
 {
-    /**
-     * Converts a hex string to a value
-     * @tparam T2
-     * @tparam T1
-     * @param in
-     * @return
-     */
-    template<typename T2, typename T1>
-    inline T2 convert(const T1 &in) {
-        T2 out;
-        uint64_t tmp;
-        std::stringstream ss;
-        ss << std::hex << in;
-        ss >> tmp;
-        memcpy(&out, &tmp, sizeof(T2));
-        return out;
-    }
-
-};
+    namespace utils
+    {
+        /**
+         * Converts a hex string to a value
+         * @tparam T2
+         * @tparam T1
+         * @param in
+         * @return
+         */
+        template<typename T2, typename T1>
+        inline T2 convert(const T1 &in) {
+            T2 out;
+            uint64_t tmp;
+            std::stringstream ss;
+            ss << std::hex << in;
+            ss >> tmp;
+            memcpy(&out, &tmp, sizeof(T2));
+            return out;
+        }
+    }; /*namespace utils*/
+}; /*namespace openlib*/
 
 #endif /* OPENLIB_COMMON_H */

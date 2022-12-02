@@ -27,6 +27,7 @@
 #include "openlib/enum/endianess.h"
 #include "openlib/icd/enun/data_type.h"
 #include "openlib/utils/utils.h"
+#include "openlib/utils/string.h"
 #include <algorithm>
 #include <map>
 #include <string>
@@ -281,31 +282,31 @@ namespace openlib
             switch (data_type_)
             {
                 case DataType_uint8  :
-                    *as_uint8() = openlib::convert<uint8_t>(hex_str);
+                    *as_uint8() = openlib::utils::convert<uint8_t>(hex_str);
                     break;
 
                 case DataType_int8   :
-                    *as_int8()  = openlib::convert<int8_t>(hex_str);
+                    *as_int8()  = openlib::utils::convert<int8_t>(hex_str);
                     break;
 
                 case DataType_uint16 :
-                    *as_uint16() = openlib::convert<uint16_t>(hex_str);
+                    *as_uint16() = openlib::utils::convert<uint16_t>(hex_str);
                     break;
 
                 case DataType_int16  :
-                    *as_int16()  = openlib::convert< int16_t>(hex_str);
+                    *as_int16()  = openlib::utils::convert< int16_t>(hex_str);
                     break;
 
                 case DataType_uint32 :
-                    *as_uint32() = openlib::convert<uint32_t>(hex_str);
+                    *as_uint32() = openlib::utils::convert<uint32_t>(hex_str);
                     break;
 
                 case DataType_int32  :
-                    *as_int32()  = openlib::convert<int32_t>(hex_str);
+                    *as_int32()  = openlib::utils::convert<int32_t>(hex_str);
                     break;
 
                 case DataType_enum   :
-                    *as_enum()   = openlib::convert<int>(hex_str);
+                    *as_enum()   = openlib::utils::convert<int>(hex_str);
                     break;
 
                 case DataType_ascii  :
@@ -313,7 +314,7 @@ namespace openlib
                     break;
 
                 case DataType_binary :
-
+                    openlib::string::hex_str_to_binary(hex_str, data_, data_length_);
                     break;
 
                 default:
