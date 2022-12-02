@@ -19,32 +19,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef OPENLIB_NON_COPYABLE_H
-#define OPENLIB_NON_COPYABLE_H
-
-//-Supporting libraries
-#include <stddef.h>
-#include <stdio.h>
-#include <mutex>
-#include <thread>
+#ifndef OPENLIB_ICD_ENUM_PARSER_ERROR_H
+#define OPENLIB_ICD_ENUM_PARSER_ERROR_H
 
 //-Namespace/s
 namespace openlib
 {
-    /**
-     * Base class hides copy constructor
-     */
-    class NonCopyable
+    namespace icd
     {
-        public:
-            NonCopyable(){}
-            virtual ~NonCopyable(){}
 
-        private:
-            NonCopyable(const NonCopyable&) {};
-    }; /*class NonCopyable*/
-}; /*namespace openlib*/
+        enum ParserError
+        {
+            ParserError_None,
 
+        };
+    };/*namespace icd*/
+};/*namespace openlib*/
 
-
-#endif /*OPENLIB_NON_COPYABLE_H*/
+#endif /*OPENLIB_ICD_ENUM_PARSER_ERROR_H*/

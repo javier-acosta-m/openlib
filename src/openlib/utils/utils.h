@@ -19,32 +19,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef OPENLIB_NON_COPYABLE_H
-#define OPENLIB_NON_COPYABLE_H
+#ifndef OPENLIB_UTILS__H
+#define OPENLIB_UTILS__H
 
 //-Supporting libraries
-#include <stddef.h>
-#include <stdio.h>
-#include <mutex>
-#include <thread>
+#include <stdint.h>
+#include <sstream>
 
-//-Namespace/s
 namespace openlib
 {
     /**
-     * Base class hides copy constructor
+     * Converts a hex string to a value
+     * @tparam T2
+     * @tparam T1
+     * @param in
+     * @return
      */
-    class NonCopyable
-    {
-        public:
-            NonCopyable(){}
-            virtual ~NonCopyable(){}
+    template<typename T2, typename T1>
+    inline T2 convert(const T1 &in) {
+        T2 out;
+        uint64_t tmp;
+        std::stringstream ss;
+        ss << std::hex << in;
+        ss >> tmp;
+        memcpy(&out, &tmp, sizeof(T2));
+        return out;
+    }
 
-        private:
-            NonCopyable(const NonCopyable&) {};
-    }; /*class NonCopyable*/
-}; /*namespace openlib*/
+};
 
-
-
-#endif /*OPENLIB_NON_COPYABLE_H*/
+#endif /* OPENLIB_COMMON_H */

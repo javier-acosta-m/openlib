@@ -23,17 +23,17 @@
 #define OPENLIB_BUFFER_HANDLER_H
 
 //-Supporting libraries
+#include "openlib/common.h"
+#include "openlib/enum/endianess.h"
+#include "openlib/buffer/bit.h"
+#include "openlib/icd/data_descriptor.h"
+#include "openlib/icd/struct/icd_data_entry.h"
+#include <algorithm>
 #include <assert.h>
 #include <iomanip>
 #include <iostream>
 #include <stdint.h>
 #include <climits>
-
-
-//-Ancillary macros
-#define BYTE2BIT(b) (b*8)
-#define BIT2BYTE(b) (b/8)
-#define GET_BIT(array, n) ((((uint8_t*)array)[n/8] >> ((7-n)%8)) & 0x01)
 
 namespace openlib
 {
@@ -52,37 +52,20 @@ namespace openlib
         };
 
         /**
-        * Endianess (byte order)
-        */
-        enum Endianess
+         * Print buffer binary content
+         * @param buffer The pointer to the buffer to print (byte array)
+         * @param length The length in bytes
+         */
+        inline void print_buffer(const void* buffer, const size_t& length)
         {
-            BIG_ENDIAN,
-            LITTLE_ENDIAN
-        };
-
-        /**
-        * Describes and entry on the ICD
-        */
-        template <typename T>
-        struct ICDEntry
-        {
-            ICDEntry(const size_t& byte_offset, const size_t& bit_offset, const size_t& num_bits, const Endianess& endianess) :
-                byte_offset(byte_offset),
-                bit_offset(bit_offset),
-                num_bits(num_bits),
-                endianess(endianess)
-            {}
-            size_t    byte_offset;
-            size_t    bit_offset;
-            size_t    num_bits;
-            Endianess endianess;
-            T         value;
-        };
-
-        //-Functions
-        template <typename T> T swap_endian(T u);
-        void print_buffer(const void* buffer, const size_t& length);
-        template <typename T> int extract(const void* buffer, const size_t buffer_length, const size_t& byte_idx, const size_t& bit_pos, const size_t& bit_length, const Endianess& endianess, T* value);
+            if (NULL != buffer)
+            {
+                for (size_t bit_idx=0; bit_idx < 8*length; ++bit_idx)
+                {
+                    std::cout <<"bit "<< std::dec << bit_idx << " is "<< (int) bit::get_bit_array(buffer, bit_idx) << std::endl;
+                }
+            }
+        }
 
         /**
          * Returns the swaps byte orders of the value
@@ -91,7 +74,7 @@ namespace openlib
          * @return the value with the bytes swapped
          */
         template <typename T>
-        T swap_endian(T value)
+        inline T swap_endian(T value)
         {
             union
             {
@@ -108,23 +91,6 @@ namespace openlib
         }
 
         /**
-         * Print buffer binary content
-         * @param buffer The pointer to the buffer to print (byte array)
-         * @param length The length in bytes
-         */
-        inline void print_buffer(const void* buffer, const size_t& length)
-        {
-            if (NULL != buffer)
-            {
-                for (size_t bit_idx=0; bit_idx < 8*length; ++bit_idx)
-                {
-                    std::cout <<"bit "<< std::dec << bit_idx << " is "<< GET_BIT(buffer, bit_idx) << std::endl;
-                }
-            }
-        }
-
-
-        /**
          * Extract an integral type from a byte array
          * @tparam T Template type (integral type)
          * @param buffer The buffer from where to extract the value
@@ -137,7 +103,7 @@ namespace openlib
          * @return int containing the error code (@see Error, 0: SUCCESSS)
          */
         template <typename T>
-        int extract(const void* buffer, const size_t buffer_length, const size_t& byte_idx, const size_t& bit_pos, const size_t& bit_length, const Endianess& endianess, T* value)
+        inline int extract(const void* buffer, const size_t buffer_length, const size_t& byte_idx, const size_t& bit_pos, const size_t& bit_length, const Endianess& buffer_endianess, T* value)
         {
             //-Check buffer
             if (NULL == buffer)
@@ -161,37 +127,25 @@ namespace openlib
               return ERROR_CONTAINER_TOO_SMALL;
             }
 
-            //-Debug
-            #ifndef NDEBUG
-            std::cout << "Extract" << std::endl;
-            #endif
-
             //-Extract bits
             *value =0;
+            const size_t bit_offset = BYTE2BIT(byte_idx) + bit_pos;
             for (size_t bit_idx=0; bit_idx < bit_length; ++bit_idx)
             {
-                size_t bit_num = BYTE2BIT(byte_idx) + bit_pos + bit_idx;
-                *value |= (GET_BIT(buffer, bit_num) << ( BYTE2BIT(sizeof(T))-1-bit_idx));
+                //-Get the bit from the buffer
+                uint8_t bit_value = bit::get_bit_array(buffer, bit_offset + bit_idx);
 
-                //-Debug
-                #ifndef NDEBUG
-                    uint8_t bit_value = GET_BIT(buffer, bit_num);
-                    std::cout <<"bit "<< std::dec << bit_num << " is "<< (int) bit_value << std::endl;
-                #endif
-
+                //-Set the bit in the value
+                bit::set_bit_array(value, bit_idx, bit_value);
             }
+
             //-Shift if necessary
             *value = *value >> (BYTE2BIT(sizeof(T))-bit_length);
 
-            switch (endianess)
+            //-Check endianess
+            if (buffer_endianess != system_endianess())
             {
-                case BIG_ENDIAN:
-                    //-Do nothing
-                    break;
-
-                case LITTLE_ENDIAN:
-                    *value = swap_endian(*value);
-                    break;
+                *value = swap_endian(*value);
             }
 
             return SUCCESS;
@@ -207,16 +161,166 @@ namespace openlib
          * @return int containing the error code (@see Error, 0: SUCCESSS)
          */
         template <typename T>
-        int extract(const void* buffer, const size_t buffer_length, ICDEntry<T>& icd_entry)
+        inline int extract(const void* buffer, const size_t buffer_length, openlib::icd::ICDDataEntry<T>& icd_entry)
         {
             return extract(buffer, buffer_length, icd_entry.byte_offset, icd_entry.bit_offset, icd_entry.num_bits, icd_entry.endianess, &icd_entry.value);
         }
 
+        /**
+         * Insert an integral type from a byte array
+         * @tparam T
+         * @param buffer
+         * @param buffer_length
+         * @param byte_idx
+         * @param bit_pos
+         * @param bit_length
+         * @param buffer_endianess
+         * @param value
+         * @return int containing the error code (@see Error, 0: SUCCESSS)
+         */
+        template <typename T>
+        inline int insert(void* buffer, const size_t buffer_length, const size_t& byte_idx, const size_t& bit_pos, const size_t& bit_length, const Endianess& buffer_endianess, T* value)
+        {
+            //-Check buffer
+            if (NULL == buffer)
+            {
+                return ERROR_NULL_PARAMETER;
+            }
+
+            //-Check length of teh buffer
+            if (BYTE2BIT(buffer_length) < (BYTE2BIT(byte_idx) + bit_pos + bit_length))
+            {
+                return ERROR_NOT_ENOUGH_DATA;
+            }
+
+            //-Check recipient of data
+            if (bit_length % 8 != 0 && sizeof(T) < 1 + (bit_length / 8))
+            {
+                return ERROR_CONTAINER_TOO_SMALL;
+            }
+            else if (bit_length % 8 == 0 && sizeof(T) < (bit_length / 8))
+            {
+                return ERROR_CONTAINER_TOO_SMALL;
+            }
+
+            //-Debug
+            #ifndef NDEBUG
+            std::cout << "Insert" << std::endl;
+            #endif
+
+            //-Check the buffer buffer_endianess vs the system
+            T value_buffer_endianess = *value;
+            if (system_endianess() != buffer_endianess)
+            {
+                value_buffer_endianess = swap_endian(value_buffer_endianess);
+            }
+
+            //-Set bits
+            const size_t bit_offset = BYTE2BIT(byte_idx) + bit_pos;
+            for (size_t bit_idx = 0; bit_idx < bit_length; ++bit_idx)
+            {
+                //-Get the buffer bit number
+                uint8_t bit_value = bit::get_bit_array(&value_buffer_endianess, bit_idx);
+                
+                //-Set the bit in the buffer
+                bit::set_bit_array(buffer, bit_offset + bit_idx, bit_value);
+            }
+            return SUCCESS;
+        }
+
+
+        /**
+         * Insert (encodes) a data descriptor onto a buffer
+         * @param buffer The buffer where to encode the data
+         * @param buffer_length The buffer length
+         * @param data_descriptor The data with descriptor
+         * @return
+         */
+        inline int insert(void* buffer, const size_t buffer_length, openlib::icd::DataDescriptor& data_descriptor)
+        {
+            int retval = 0;
+            using namespace openlib::icd;
+            switch (data_descriptor.data_type())
+            {
+                case DataType_uint8:
+                    retval = insert(buffer, buffer_length,
+                            data_descriptor.byte_offset(),
+                            data_descriptor.bit_offset(),
+                            data_descriptor.num_bits(),
+                            data_descriptor.endianess(),
+                            data_descriptor.as_uint8());
+                    break;
+
+                case DataType_int8:
+                    retval = insert(buffer, buffer_length,
+                            data_descriptor.byte_offset(),
+                            data_descriptor.bit_offset(),
+                            data_descriptor.num_bits(),
+                            data_descriptor.endianess(),
+                            data_descriptor.as_int8());
+                    break;
+
+
+                case DataType_uint16:
+                    retval = insert(buffer, buffer_length,
+                            data_descriptor.byte_offset(),
+                            data_descriptor.bit_offset(),
+                            data_descriptor.num_bits(),
+                            data_descriptor.endianess(),
+                            data_descriptor.as_uint16());
+                    break;
+
+                case DataType_int16:
+                    retval = insert(buffer, buffer_length,
+                            data_descriptor.byte_offset(),
+                            data_descriptor.bit_offset(),
+                            data_descriptor.num_bits(),
+                            data_descriptor.endianess(),
+                            data_descriptor.as_int16());
+                    break;
+
+                case DataType_uint32:
+                    retval = insert(buffer, buffer_length,
+                            data_descriptor.byte_offset(),
+                            data_descriptor.bit_offset(),
+                            data_descriptor.num_bits(),
+                            data_descriptor.endianess(),
+                            data_descriptor.as_uint32());
+                    break;
+
+                case DataType_int32:
+                    retval = insert(buffer, buffer_length,
+                            data_descriptor.byte_offset(),
+                            data_descriptor.bit_offset(),
+                            data_descriptor.num_bits(),
+                            data_descriptor.endianess(),
+                            data_descriptor.as_int32());
+                    break;
+
+                case DataType_enum:
+                    retval = insert(buffer, buffer_length,
+                            data_descriptor.byte_offset(),
+                            data_descriptor.bit_offset(),
+                            data_descriptor.num_bits(),
+                            data_descriptor.endianess(),
+                            data_descriptor.as_enum());
+                    break;
+
+                case DataType_binary:
+                case DataType_ascii:
+                    memcpy(buffer, data_descriptor.as_binary(), std::min(buffer_length, data_descriptor.data_length()));
+                    //retval = insert(buffer, buffer_length, data_descriptor.byte_offset, data_descriptor.bit_offset, data_descriptor.num_bits_, data_descriptor.endianess_, data_descriptor.as_uint8());
+                    break;
+                default:
+                    break;
+            }
+            return retval;
+        }
 
     }; /*namespace buffer*/
 }; /*namespace openlib*/
 
 //-Cleanup macros
-#undef GET_BIT
+#undef GET_BIT_ARRAY
 
 #endif /* OPENLIB_BUFFER_HANDLER_H */

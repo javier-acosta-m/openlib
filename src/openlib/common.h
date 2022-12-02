@@ -19,32 +19,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef OPENLIB_NON_COPYABLE_H
-#define OPENLIB_NON_COPYABLE_H
+#ifndef OPENLIB_COMMON_H
+#define OPENLIB_COMMON_H
 
-//-Supporting libraries
-#include <stddef.h>
-#include <stdio.h>
-#include <mutex>
-#include <thread>
+#include <stdint.h>
 
-//-Namespace/s
+//-Ancillary macros
+#define BYTE2BIT(b) (b*8)
+#define BIT2BYTE(b) (b/8)
+#define GET_BIT_ARRAY(array, n) ((((uint8_t*)array)[n/8] >> ((7-n)%8)) & 0x01)
+#define SET_BIT_ARRAY(array, n, bit_value) ((((uint8_t*)array)[n/8] >> ((7-n)%8)) & 0x01)
+
+#define CLR_BIT_VALUE(bit_num, value) (value &= ~(1 << bit_num))
+#define SET_BIT_VALUE(bit_num, value) (value |=  (1 << bit_num))
+
 namespace openlib
 {
     /**
-     * Base class hides copy constructor
+     * Safe delete of a pointer
+     * @tparam T Parametric pointer type
      */
-    class NonCopyable
+    template< class T > void Delete( T*& ptr )
     {
-        public:
-            NonCopyable(){}
-            virtual ~NonCopyable(){}
+        if (0 != ptr){
+            delete ptr;
+            ptr = 0;
+        }
+    }
 
-        private:
-            NonCopyable(const NonCopyable&) {};
-    }; /*class NonCopyable*/
-}; /*namespace openlib*/
+    /**
+     * Safe delete of an array
+     * @tparam T Parametric array pointer type
+     */
+    template< class T > void DeleteArray( T*& ptr_array )
+    {
+        if (0 != ptr_array)
+        {
+            delete[] ptr_array;
+            ptr_array = 0;
+        }
+    }
 
+};
 
-
-#endif /*OPENLIB_NON_COPYABLE_H*/
+#endif /* OPENLIB_COMMON_H */

@@ -19,32 +19,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef OPENLIB_NON_COPYABLE_H
-#define OPENLIB_NON_COPYABLE_H
+#ifndef OPENLIB_ICD_BASE_PARSER_H
+#define OPENLIB_ICD_BASE_PARSER_H
 
 //-Supporting libraries
-#include <stddef.h>
-#include <stdio.h>
-#include <mutex>
-#include <thread>
+#include "openlib/icd/message_icd.h""
+#include <string>
+#include <map>
+#include <set>
 
 //-Namespace/s
 namespace openlib
 {
-    /**
-     * Base class hides copy constructor
-     */
-    class NonCopyable
-    {
-        public:
-            NonCopyable(){}
-            virtual ~NonCopyable(){}
+	namespace icd
+	{
+        enum ParserError
+        {
+            ParserError_None,
+        };
 
-        private:
-            NonCopyable(const NonCopyable&) {};
-    }; /*class NonCopyable*/
-}; /*namespace openlib*/
+		/**
+		 * Parses a data field
+		 */
+		class BaseICDParser
+		{
+		    public:
+                BaseICDParser(){};
+				virtual ~BaseICDParser(){};
+
+				virtual ParserError parse(const std::string& text, MessageICD& icd_message) = 0;
+				virtual ParserError parse(const void* data, const size_t data_length, MessageICD& icd_message) = 0;
+
+		}; /*class BaseICDParser*/
 
 
 
-#endif /*OPENLIB_NON_COPYABLE_H*/
+
+
+	};/*namespace icd*/
+};/*namespace openlib*/
+
+#endif /*OPENLIB_ICD_BASE_PARSER_H*/

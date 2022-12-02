@@ -19,32 +19,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef OPENLIB_NON_COPYABLE_H
-#define OPENLIB_NON_COPYABLE_H
+#ifndef OPENLIB_H
+#define OPENLIB_H
 
-//-Supporting libraries
-#include <stddef.h>
-#include <stdio.h>
-#include <mutex>
-#include <thread>
+//-Library
+#include "openlib/common.h"
+#include "openlib/enum/endianess.h"
+#include "openlib/buffer/buffer_handler.h"
+#include "openlib/icd/base_parser.h"
+#include "openlib/icd/icd_message.h"
+#include "openlib/icd/icd_data_entry.h"
+#include "openlib/icd/enun/data_type.h"
+#include "openlib/icd/enun/parser_error.h"
+#include "openlib/non-copyable/non_copyable.h"
+#include "openlib/singleton/singleton.h"
 
-//-Namespace/s
-namespace openlib
-{
-    /**
-     * Base class hides copy constructor
-     */
-    class NonCopyable
-    {
-        public:
-            NonCopyable(){}
-            virtual ~NonCopyable(){}
-
-        private:
-            NonCopyable(const NonCopyable&) {};
-    }; /*class NonCopyable*/
-}; /*namespace openlib*/
-
-
-
-#endif /*OPENLIB_NON_COPYABLE_H*/
+#endif /* OPENLIB_H */

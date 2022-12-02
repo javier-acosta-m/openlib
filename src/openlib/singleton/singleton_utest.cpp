@@ -23,7 +23,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "singleton.h"
-#include "singleton _utest.h"
+#include "singleton_utest.h"
 #include "CppUTest/TestHarness.h"
 
 TEST_GROUP(singleton)

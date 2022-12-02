@@ -27,6 +27,7 @@
 
 //-Used namespaces
 using namespace std;
+using namespace openlib;
 using namespace openlib::buffer;
 
 TEST_GROUP(buffer_hanlder)
@@ -71,14 +72,14 @@ TEST(buffer_hanlder, Test_uint8_aligned)
 	size_t bit_length = 8;
 
 	uint8_t value_uint8_be = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::BIG_ENDIAN, &value_uint8_be);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_BigEndian, &value_uint8_be);
 	//std::cout << "OK=" << ok << std::endl;
 	//std::cout << "Values is 0x" << hex <<  static_cast<int>(value_uint8_be) << std::endl;
 	CHECK_EQUAL(ok, SUCCESS);
 	CHECK_EQUAL(0x10, value_uint8_be);
 
 	uint8_t value_uint8_le = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::LITTLE_ENDIAN, &value_uint8_le);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_BigEndian, &value_uint8_le);
 	//std::cout << "OK=" << ok << std::endl;
 	//std::cout << "Values is 0x" << hex <<  static_cast<int>(value_uint8_le) << std::endl;
 	CHECK_EQUAL(ok, SUCCESS);
@@ -96,14 +97,14 @@ TEST(buffer_hanlder, Test_uint8_misaligned)
 	size_t bit_length = 8;
 
 	uint8_t value_uint8_be = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::BIG_ENDIAN, &value_uint8_be);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_BigEndian, &value_uint8_be);
 	//std::cout << "OK=" << ok << std::endl;
 	//std::cout << "Values is 0x" << hex <<  static_cast<int>(value_uint8_be) << std::endl;
 	CHECK_EQUAL(ok, SUCCESS);
 	CHECK_EQUAL((byte0 << 1), value_uint8_be);
 
 	uint8_t value_uint8_le = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::LITTLE_ENDIAN, &value_uint8_le);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_BigEndian, &value_uint8_le);
 	//std::cout << "\nOK=" << ok << std::endl;
 	//std::cout << "Values is 0x" << hex <<  static_cast<int>(value_uint8_be) << std::endl;
 	CHECK_EQUAL(ok, SUCCESS);
@@ -119,14 +120,14 @@ TEST(buffer_hanlder, Test_uint8_misaligned_cross_boundary)
 	size_t bit_length = 8;
 
 	uint8_t value_uint8_be = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::BIG_ENDIAN, &value_uint8_be);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_BigEndian, &value_uint8_be);
 	//std::cout << "OK=" << ok << std::endl;
 	//std::cout << "Values is 0x" << hex <<  static_cast<int>(value_uint8_be) << std::endl;
 	CHECK_EQUAL(ok, SUCCESS);
 	CHECK_EQUAL((byte2 & 0x01) << 7 | byte3 >> 1, value_uint8_be);
 
 	uint8_t value_uint8_le = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::LITTLE_ENDIAN, &value_uint8_le);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_BigEndian, &value_uint8_le);
 	//std::cout << "OK=" << ok << std::endl;
 	//std::cout << "Values is 0x" << hex <<  static_cast<int>(value_uint8_le) << std::endl;
 	CHECK_EQUAL(ok, SUCCESS);
@@ -141,14 +142,14 @@ TEST(buffer_hanlder, Test_uint8_smaller_misaligned_cross_boundary)
 	size_t bit_length = 4;
 
 	uint8_t value_uint8_be = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::BIG_ENDIAN, &value_uint8_be);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_BigEndian, &value_uint8_be);
 	//std::cout << "OK=" << ok << std::endl;
 	//std::cout << "Values is 0x" << hex <<  static_cast<int>(value_uint8_be) << std::endl;
 	CHECK_EQUAL(ok, SUCCESS);
 	CHECK_EQUAL((byte2 & 0x01) << 3  | byte3 >> 5 , value_uint8_be);
 
 	uint8_t value_uint8_le = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::LITTLE_ENDIAN, &value_uint8_le);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_BigEndian, &value_uint8_le);
 	//std::cout << "OK=" << ok << std::endl;
 	//std::cout << "Values is 0x" << hex <<  static_cast<int>(value_uint8_le) << std::endl;
 	CHECK_EQUAL(ok, SUCCESS);
@@ -168,12 +169,12 @@ TEST(buffer_hanlder, Test_int16_aligned)
 	size_t bit_length = 16;
 
 	int16_t value_int16_be = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::BIG_ENDIAN, &value_int16_be);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_BigEndian, &value_int16_be);
 	CHECK_EQUAL(ok, SUCCESS);
 	CHECK_EQUAL( (int16_t) (byte0 << 8 | byte1 << 0), value_int16_be);
 
 	int16_t value_int16_le = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::LITTLE_ENDIAN, &value_int16_le);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_LittleEndian, &value_int16_le);
 	CHECK_EQUAL(ok, SUCCESS);
 	CHECK_EQUAL( (int16_t) (byte0 << 0 | byte1 << 8), value_int16_le);
 }
@@ -187,14 +188,14 @@ TEST(buffer_hanlder, Test_int16_misaligned)
 	size_t bit_length = 16;
 
 	int16_t value_int16_be = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::BIG_ENDIAN, &value_int16_be);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_BigEndian, &value_int16_be);
 	uint8_t msb_byte_expected = (byte0 << 1 | byte1 >> 7);
 	uint8_t lsb_byte_expected = (byte1 << 1 | byte2 >> 7);
 	CHECK_EQUAL(ok, SUCCESS);
 	CHECK_EQUAL( (int16_t) (msb_byte_expected << 8 | lsb_byte_expected << 0) , value_int16_be);
 
 	int16_t value_int16_le = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::LITTLE_ENDIAN, &value_int16_le);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_LittleEndian, &value_int16_le);
 	msb_byte_expected = (byte0 << 1 | byte1 >> 7);
 	lsb_byte_expected = (byte1 << 1 | byte2 >> 7);
 	CHECK_EQUAL(ok, SUCCESS);
@@ -209,16 +210,18 @@ TEST(buffer_hanlder, Test_int16_negative)
 	size_t bit_pos = 0;
 	size_t bit_length = 16;
 
+	//-Test big-endian
 	int16_t value_int16_be = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::BIG_ENDIAN, &value_int16_be);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_BigEndian, &value_int16_be);
 	uint8_t msb_byte_expected = byte2;
 	uint8_t lsb_byte_expected = byte3;
 	CHECK_EQUAL(ok, SUCCESS);
 	CHECK_EQUAL( (int16_t) (msb_byte_expected << 8 | lsb_byte_expected << 0) , value_int16_be);
 	CHECK(value_int16_be < 0);
 
+	//-Test little-endian
 	int16_t value_int16_le = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::LITTLE_ENDIAN, &value_int16_le);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_LittleEndian, &value_int16_le);
 	msb_byte_expected = byte2;
 	lsb_byte_expected = byte3;
 	CHECK_EQUAL(ok, SUCCESS);
@@ -237,7 +240,7 @@ TEST(buffer_hanlder, Test_error_null_parameter)
 	size_t bit_length = 4;
 
 	uint8_t value_uint8_be = 0;
-	ok = extract(NULL, buffer_length, byte_idx, bit_pos, bit_length, Endianess::BIG_ENDIAN, &value_uint8_be);
+	ok = extract(NULL, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_BigEndian, &value_uint8_be);
 	//std::cout << "OK=" << ok << std::endl;
 	CHECK_EQUAL(ok, ERROR_NULL_PARAMETER);
 }
@@ -250,7 +253,7 @@ TEST(buffer_hanlder, Test_error_out_of_boundary)
 	size_t bit_length = 4;
 
 	uint8_t value_uint8_be = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::BIG_ENDIAN, &value_uint8_be);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_BigEndian, &value_uint8_be);
 	//std::cout << "OK=" << ok << std::endl;
 	CHECK_EQUAL(ok, ERROR_NOT_ENOUGH_DATA);
 }
@@ -263,7 +266,7 @@ TEST(buffer_hanlder, Test_error_out_constainer_too_small)
 	size_t bit_length = 9;
 
 	uint8_t value_uint8_be = 0;
-	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::BIG_ENDIAN, &value_uint8_be);
+	ok = extract(buffer, buffer_length, byte_idx, bit_pos, bit_length, Endianess::Endianess_BigEndian, &value_uint8_be);
 	//std::cout << "OK=" << ok << std::endl;
 	CHECK_EQUAL(ok, ERROR_CONTAINER_TOO_SMALL);
 }
