@@ -39,7 +39,7 @@ namespace openlib
          * @param buffer The buffer where to store the converted data
          * @param buffer_length The buffer length
          */
-        void hex_str_to_binary(const std::string& hex_str, void* buffer, const size_t& buffer_length)
+        inline void hex_str_to_binary(const std::string& hex_str, void* buffer, const size_t& buffer_length)
         {
             //-Safety check
             if (NULL != buffer)
