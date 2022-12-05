@@ -47,6 +47,7 @@ namespace openlib
                 //-Types
                 typedef std::map<int,std::string> EnumMap;
                 typedef EnumMap::const_iterator   EnumMapConstIterator;
+                typedef int (ValidateCallbackType (const DataDescriptor*, std::string& error_msg));
 
                 DataDescriptor( const DataType& data_type, const std::string& name,
                                 const size_t& byte_offset, const size_t& bit_offset,
@@ -58,7 +59,8 @@ namespace openlib
                     num_bits_(num_bits),
                     endianess_(endianess),
                     data_(NULL),
-                    data_length_(0)
+                    data_length_(0),
+                    validate_fnc_(NULL)
                 {
                     switch (data_type)
                     {
@@ -88,8 +90,8 @@ namespace openlib
                 }
 
                 //-Accessor
-                inline const DataType& data_type() const            {return this->data_type_;   }
-                inline const std::string& name() const              {return this->name_;        }
+                inline const DataType& data_type() const            { return this->data_type_;   }
+                inline const std::string& name() const              { return this->name_;        }
                 inline const size_t& byte_offset() const            { return byte_offset_;      }
                 inline const size_t& bit_offset() const             { return bit_offset_;       }
                 inline const size_t& num_bits() const               { return num_bits_;         }
@@ -132,19 +134,21 @@ namespace openlib
                 inline void set(const void* buffer, const size_t buffer_length);
                 inline void set_enum(const int&, const std::string& str_value);
                 inline std::string get_enum(const int& value, bool& found);
-                
+                inline int validate(std::string& error_msg) const;
 
             protected:
                 //-Fields
-                DataType            data_type_;
-                std::string         name_;
-                size_t              byte_offset_;
-                size_t              bit_offset_;
-                size_t              num_bits_;
-                openlib::Endianess  endianess_;
-                uint8_t*            data_;
-                size_t              data_length_;
-                EnumMap             enum_map_;
+                DataType                data_type_;
+                std::string             name_;
+                size_t                  byte_offset_;
+                size_t                  bit_offset_;
+                size_t                  num_bits_;
+                openlib::Endianess      endianess_;
+                uint8_t*                data_;
+                size_t                  data_length_;
+                EnumMap                 enum_map_;
+                ValidateCallbackType*   validate_fnc_;
+
         };/*DataDescriptor*/
 
         /**
@@ -372,6 +376,21 @@ namespace openlib
             {
                 retval = "@invalid type:" + to_string(data_type_);
                 assert(false);
+            }
+            return retval;
+        }
+
+        /**
+         * Call validation function (if set otherwise returns SUCCESS)
+         * @return 0 must be SUCCESS, rest is customizable
+         */
+        int DataDescriptor::validate(std::string& error_msg) const
+        {
+            int retval = 0;
+            error_msg = "";
+            if (NULL != this->validate_fnc_)
+            {
+                retval = this->validate_fnc_(this, error_msg);
             }
             return retval;
         }
