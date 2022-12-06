@@ -40,16 +40,6 @@ namespace openlib
 	    template <typename T>
 		struct ICDDataEntry
 		{
-	        //ICDDataEntry(const std::string& name, const DataType& data_type, const size_t& byte_offset,  const size_t& bit_offset,  const size_t& num_bits, const Endianess& endianess) :
-	        //    name(name),
-	        //    data_type(data_type),
-	        //    byte_offset(byte_offset),
-	        //    bit_offset(bit_offset),
-	        //    num_bits(num_bits),
-	        //    endianess(endianess)
-	        //{
-	        //}
-
             ICDDataEntry(const size_t& byte_offset, const size_t& bit_offset, const size_t& num_bits, const Endianess& endianess) :
                 byte_offset(byte_offset),
                 bit_offset(bit_offset),

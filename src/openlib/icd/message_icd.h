@@ -43,11 +43,12 @@ namespace openlib
         {            
             public:
                 typedef std::set<DataDescriptor*, DataDescriptorPtrCompareLess> DataFieldSet;
-                typedef DataFieldSet::const_iterator                            DataFieldSetConstIterator;
+                typedef DataFieldSet::const_iterator DataFieldSetConstIterator;
+                typedef DataFieldSet::iterator DataFieldSetIterator;
 
                 //-Constructor & Destructor
                 MessageICD() {};
-                virtual ~MessageICD(){};
+                virtual ~MessageICD() { clear(); };
 
                 //-Accessor & Mutators
                 inline const DataFieldSet& data_field_set() const;
@@ -59,6 +60,7 @@ namespace openlib
             protected:
                 //-Functions
                 inline void add(DataDescriptor* data_descriptor);
+                inline void clear();
 
                 //-Fields
                 DataFieldSet data_field_set_;
@@ -85,6 +87,15 @@ namespace openlib
                 data_field_set_.insert(data_descriptor);
             }
         }
+
+        /**
+        * Clear content of the data descriptors        
+        */
+        void MessageICD::clear()
+        {   
+            data_field_set_.erase(data_field_set_.begin(), data_field_set_.end());
+        }
+    
 
     };/*namespace icd*/
 };/*namespace openlib*/
