@@ -27,7 +27,7 @@
 #include "openlib/enum/endianess.h"
 #include "openlib/icd/enun/data_type.h"
 #include "openlib/utils/utils.h"
-#include "openlib/utils/string.h"
+#include "openlib/utils/string_fnc.h"
 #include <algorithm>
 #include <map>
 #include <string>
@@ -318,7 +318,7 @@ namespace openlib
                     break;
 
                 case DataType_binary :
-                    openlib::string::hex_str_to_binary(hex_str, data_, data_length_);
+                    openlib::string_fnc::hex_str_to_binary(hex_str, data_, data_length_);
                     break;
 
                 default:

@@ -30,7 +30,7 @@
 //-Namespace/s
 namespace openlib
 {
-    namespace string
+    namespace string_fnc
     {
 
         /**
@@ -62,7 +62,7 @@ namespace openlib
             }
         }
 
-    }; /*namespace string*/
+    }; /*namespace string_fnc*/
 };
 
 #endif /* OPENLIB_UTILS_STRING_H */
