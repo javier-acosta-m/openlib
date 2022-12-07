@@ -25,7 +25,7 @@
 //-Supporting libraries
 #include "openlib/common.h"
 #include "openlib/enum/endianess.h"
-#include "openlib/icd/enun/data_type.h"
+#include "openlib/icd/enum/data_type.h"
 #include "openlib/utils/utils.h"
 #include "openlib/utils/string_fnc.h"
 #include <algorithm>

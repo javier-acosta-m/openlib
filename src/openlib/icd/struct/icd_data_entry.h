@@ -24,7 +24,7 @@
 
 //-Supporting libraries
 #include "openlib/enum/endianess.h"
-#include "openlib/icd/enun/data_type.h"
+#include "openlib/icd/enum/data_type.h"
 #include <string>
 #include <map>
 #include <set>

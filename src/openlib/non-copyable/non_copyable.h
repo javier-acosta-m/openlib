@@ -43,6 +43,7 @@ namespace openlib
         private:
             NonCopyable(const NonCopyable&) {};
     }; /*class NonCopyable*/
+
 }; /*namespace openlib*/
 
 

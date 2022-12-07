@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <sstream>
 #include <iomanip>
+#include <string>
 
 //-Namespace/s
 namespace openlib

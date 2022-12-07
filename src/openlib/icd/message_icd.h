@@ -25,7 +25,7 @@
 //-Supporting libraries
 #include "openlib/non-copyable/non_copyable.h"
 #include "openlib/icd/struct/icd_data_entry.h"
-#include "openlib/icd/enun/parser_error.h"
+#include "openlib/icd/enum/parser_error.h"
 #include "openlib/icd/data_descriptor.h"
 #include <string>
 #include <map>
